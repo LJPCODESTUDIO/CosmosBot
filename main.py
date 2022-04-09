@@ -83,6 +83,7 @@ async def help(ctx):
     embed.add_field(name="removeOC", value="Removes an OC from the list", inline=False)
     embed.add_field(name="OClist", value="Shows the list", inline=False)
     embed.add_field(name="randomOC", value="Picks a random OC from the list", inline=False)
+    embed.add_field(name="prompt", value="Generates a short story with a given prompt", inline=False)
     await ctx.send(embed=embed)
 
 @bot.command()

@@ -6,6 +6,7 @@ import discordSuperUtils
 import pysos
 import random
 import openai
+from pbwrap import Pastebin
 from discordSuperUtils import MusicManager
 from discord.ext import commands
 from dotenv import load_dotenv
@@ -20,9 +21,15 @@ MusicManager = MusicManager(
 load_dotenv()
 db = pysos.Dict('OCList')
 TOKEN = os.getenv('TOKEN')
+
+pb = Pastebin(os.getenv('PASTEBIN_KEY'))
+pb.authenticate(os.getenv('NAME'), os.getenv('PASS'))
 openai.api_key = os.getenv('KEY')
-openai.api_base = 'https://api.goose.ai/v1'
+openai.api_base = 'https://api.goose.ai/v1'\
+
+
 completed_prompt = ''
+temp_prompt = ''
 
 
 # List Engines (Models)
@@ -217,30 +224,32 @@ async def prompt(ctx, *, text):
     repeat = 0
     # Create a completion, return results streaming as they are generated. Run with `python3 -u` to ensure unbuffered output.
     completed_prompt = ''
+    temp_prompt = text
     completion = openai.Completion.create(
         engine="gpt-j-6b",
         prompt=text,
-        max_tokens=400,
+        max_tokens=600,
         stream=True)
+    await ctx.send('Generating story...')
     for c in completion:
         print (c.choices[0].text, end = '')
-        completed_prompt += c.choices[0].text
-    
-    await ctx.send(completed_prompt)
+        temp_prompt += c.choices[0].text
+    completed_prompt += temp_prompt
 
     while repeat <= 2:
         completion = openai.Completion.create(
             engine="gpt-j-6b",
             prompt=completed_prompt,
-            max_tokens=400,
+            max_tokens=200,
             stream=True)
-        completed_prompt = ''
+        temp_prompt = ''
         for c in completion:
             print (c.choices[0].text, end = '')
-            completed_prompt += c.choices[0].text
-        
-        await ctx.send(completed_prompt)
+            temp_prompt += c.choices[0].text
+        completed_prompt += temp_prompt
         repeat += 1
+    
+    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 1, text))
 
 
 #@bot.command()

@@ -250,7 +250,7 @@ async def prompt(ctx, *, text):
         completed_prompt += temp_prompt
         repeat += 1
     
-    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 1, text))
+    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 1, 'story' + random.randint(1, 100)))
 
 
 #@bot.command()

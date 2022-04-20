@@ -9,6 +9,7 @@ from pbwrap import Pastebin
 from discordSuperUtils import MusicManager
 from discord.ext import commands
 from dotenv import load_dotenv
+from web import web_start, create_site
 
 #bot config
 bot = commands.Bot(command_prefix='?', activity = discord.Activity(type=discord.ActivityType.watching, name="you from the window"))
@@ -248,8 +249,8 @@ async def prompt(ctx, *, text):
             temp_prompt += c.choices[0].text
         completed_prompt += temp_prompt
         repeat += 1
-    
-    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 1, 'story' + str(random.randint(1, 100))))
+    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 0, 'story' + str(random.randint(1, 100))))
+    await ctx.send('Story generated, read it here: ' + create_site(completed_prompt, str(random.randint(1, 100))))
 
 #@bot.command()
 #async def load(ctx, extension):
@@ -264,5 +265,5 @@ async def prompt(ctx, *, text):
 #for filename in os.listdir('./cogs'):
 #    if filename.endswith('.py'):
 #        bot.load_extension(f'cogs.{filename[:-3]}')
-
+web_start()
 bot.run(TOKEN)

@@ -223,14 +223,13 @@ async def removeOC(ctx, *, name):
 async def OClist(ctx):
     embed=disnake.Embed()
     embed=disnake.Embed(title="OC list", description="List of all the OC's stored on the database")
-    print(len(db['list' + str(ctx.guild.name)]))
     i = 0
     repeat = 25
     while i <= len(db['list' + str(ctx.guild.name)])-1:
-        print(i)
         x = str(i + 1) + '.'
         embed.add_field(name=x, value=db['list' + str(ctx.guild.name)][i], inline=False)
         if i == repeat:
+            await ctx.send(embed=embed)
             embed=disnake.Embed()
             repeat += 25
         i += 1

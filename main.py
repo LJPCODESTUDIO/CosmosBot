@@ -1,36 +1,46 @@
 import os
-import discord
+from timeit import repeat
+import disnake
 import ffmpeg
-import discordSuperUtils
+import disnakeSuperUtils
 import pysos
 import random
 import openai
 from pbwrap import Pastebin
-from discordSuperUtils import MusicManager
-from discord.ext import commands
+from disnakeSuperUtils import MusicManager
+from disnake.ext import commands
 from dotenv import load_dotenv
-from web import web_start, create_site
+#from web import web_start, create_site
 
-#bot config
-bot = commands.Bot(command_prefix='?', activity = discord.Activity(type=discord.ActivityType.watching, name="you from the window"))
+print('Starting Bot')
+
+# bot config
+load_dotenv()
+TOKEN = os.getenv('TOKEN')
+bot = commands.Bot(command_prefix='?', activity = disnake.Activity(type=disnake.ActivityType.watching, name="you from the window"))
 bot.remove_command('help')
 MusicManager = MusicManager(
     bot, spotify_support=False, inactivity_timeout=None
 )
 
-load_dotenv()
-db = pysos.Dict('OCList')
-TOKEN = os.getenv('TOKEN')
+#Database config
+db = pysos.Dict('DataBase')
+#db['guilds'] = []
 
+#Pastebin config
 pb = Pastebin(os.getenv('PASTEBIN_KEY'))
 pb.authenticate(os.getenv('NAME'), os.getenv('PASS'))
+
+#AI config
 openai.api_key = os.getenv('KEY')
 openai.api_base = 'https://api.goose.ai/v1'\
 
-
+# variables for prompts
 completed_prompt = ''
 temp_prompt = ''
-
+lorebook = {
+    'Scientist':'Scientist is a mentally unstable scientist who owns a tech company called Sintech. In order to hide his mental instability he has learnt not to care about anything. Jacob King is his real name, however he does not tell anybody his real name.',
+  }
 
 # List Engines (Models)
 engines = openai.Engine.list()
@@ -62,12 +72,19 @@ async def on_play(ctx, player):
 
 @bot.event
 async def on_ready():
+    for i in bot.guilds:
+        if str(i.id) not in db['guilds']:
+            temp = db['guilds']
+            temp.append(str(i.id))
+            db['guilds'] = temp
+            db['list' + str(i.id)] = []
     print('Bot is ready')
+    print('loaded on servers' + str(bot.guilds))
 
 #help command
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed()
+    embed=disnake.Embed()
     embed.add_field(name="join", value="Has the bot join a voice channel", inline=False)
     embed.add_field(name="leave", value="Has the bot leave the voice channel", inline=False)
     embed.add_field(name="play", value="Searches for and plays a song from youtube", inline=False)
@@ -173,7 +190,7 @@ async def queue(ctx):
             for x in ctx_queue.queue[ctx_queue.pos + 1 :]
         ]
 
-        embeds = discordSuperUtils.generate_embeds(
+        embeds = disnake.generate_embeds(
             formatted_queue,
             "Queue",
             f"Now Playing: {await MusicManager.now_playing(ctx)}",
@@ -181,43 +198,51 @@ async def queue(ctx):
             string_format="{}",
         )
 
-        page_manager = discordSuperUtils.PageManager(ctx, embeds, public=True)
+        page_manager = disnake.PageManager(ctx, embeds, public=True)
         await page_manager.run()
 
 @bot.command()
 async def addOC(ctx, *, name):
-    temp = db['list']
+    temp = db['list' + str(ctx.guild.id)]
     temp.append(name)
-    db['list'] = temp
-    print(db['list'])
+    db['list' + str(ctx.guild.id)] = temp
+    print(db['list' + str(ctx.guild.id)])
     await ctx.send('added ' + str(name))
     
 @bot.command()
 async def removeOC(ctx, *, name):
-    temp = db['list']
+    temp = db['list' + str(ctx.guild.id)]
     try:
-    	temp.remove(name)
-    	db['list'] = temp
+        temp.remove(name)
+        db['list' + str(ctx.guild.id)] = temp
+        await ctx.send('removed ' + name)
     except:
         await ctx.send('Deletion failed, did you spell it correctly?')
-    await ctx.send('removed ' + name)
 
 @bot.command()
 async def OClist(ctx):
-    embed=discord.Embed()
-    embed=discord.Embed(title="OC list", description="List of all the OC's stored on the database")
-    print(len(db['list']))
+    embed=disnake.Embed()
+    embed=disnake.Embed(title="OC list", description="List of all the OC's stored on the database")
+    print(len(db['list' + str(ctx.guild.id)]))
     i = 0
-    while i <= len(db['list'])-1:
+    repeat = 25
+    while i <= len(db['list' + str(ctx.guild.id)])-1:
         print(i)
         x = str(i + 1) + '.'
-        embed.add_field(name=x, value=db['list'][i], inline=False)
+        embed.add_field(name=x, value=db['list' + str(ctx.guild.id)][i], inline=False)
+        if i == repeat:
+            embed=disnake.Embed()
+            repeat += 25
         i += 1
     await ctx.send(embed=embed)
 
 @bot.command()
 async def randomOC(ctx):
-    await ctx.send(db['list'][random.randint(0, len(db['list']))])
+    l_length = len(db['list' + str(ctx.guild.id)])
+    if l_length == 0:
+        await ctx.send(db['list' + str(ctx.guild.id)][0])
+    else:
+        await ctx.send(db['list' + str(ctx.guild.id)][random.randint(0, l_length)])
 
 #AI Writing Commands
 @bot.command()
@@ -225,10 +250,18 @@ async def prompt(ctx, *, text):
     repeat = 0
     # Create a completion, return results streaming as they are generated. Run with `python3 -u` to ensure unbuffered output.
     completed_prompt = ''
+    temp_lore = ''''''
+    for i in lorebook.keys():
+        if i in text:
+            if not lorebook[i] in temp_lore:
+                temp_lore += lorebook[i]
+                temp_lore += '''
+                '''
+    print(temp_lore)
     temp_prompt = text
     completion = openai.Completion.create(
         engine="gpt-j-6b",
-        prompt=text,
+        prompt=temp_lore + text,
         max_tokens=600,
         stream=True)
     await ctx.send('Generating story...')
@@ -238,9 +271,17 @@ async def prompt(ctx, *, text):
     completed_prompt += temp_prompt
 
     while repeat <= 2:
+        temp_lore = ''''''
+        for i in lorebook.keys():
+            if i in completed_prompt:
+                if not lorebook[i] in temp_lore:
+                    temp_lore += lorebook[i]
+                    temp_lore += '''
+                    '''
+        print(temp_lore)
         completion = openai.Completion.create(
             engine="gpt-j-6b",
-            prompt=completed_prompt,
+            prompt=temp_lore + completed_prompt,
             max_tokens=200,
             stream=True)
         temp_prompt = ''
@@ -250,7 +291,7 @@ async def prompt(ctx, *, text):
         completed_prompt += temp_prompt
         repeat += 1
     await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 0, 'story' + str(random.randint(1, 100))))
-    await ctx.send('Story generated, read it here: ' + create_site(completed_prompt, str(random.randint(1, 100))))
+    # await ctx.send('Story generated, read it here: ' + create_site(completed_prompt, str(random.randint(1, 100))))
 
 #@bot.command()
 #async def load(ctx, extension):
@@ -265,5 +306,5 @@ async def prompt(ctx, *, text):
 #for filename in os.listdir('./cogs'):
 #    if filename.endswith('.py'):
 #        bot.load_extension(f'cogs.{filename[:-3]}')
-web_start()
+#web_start()
 bot.run(TOKEN)

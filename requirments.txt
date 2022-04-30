@@ -1,0 +1,6 @@
+discord.py[voice]
+ffmpeg
+discordSuperUtils
+pysos
+openai
+pbwrap

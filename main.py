@@ -73,11 +73,11 @@ async def on_play(ctx, player):
 @bot.event
 async def on_ready():
     for i in bot.guilds:
-        if str(i.id) not in db['guilds']:
+        if str(i.name) not in db['guilds']:
             temp = db['guilds']
-            temp.append(str(i.id))
+            temp.append(str(i.name))
             db['guilds'] = temp
-            db['list' + str(i.id)] = []
+            db['list' + str(i.name)] = []
     print('Bot is ready')
     print('loaded on servers' + str(bot.guilds))
 
@@ -203,18 +203,18 @@ async def queue(ctx):
 
 @bot.command()
 async def addOC(ctx, *, name):
-    temp = db['list' + str(ctx.guild.id)]
+    temp = db['list' + str(ctx.guild.name)]
     temp.append(name)
-    db['list' + str(ctx.guild.id)] = temp
-    print(db['list' + str(ctx.guild.id)])
+    db['list' + str(ctx.guild.name)] = temp
+    print(db['list' + str(ctx.guild.name)])
     await ctx.send('added ' + str(name))
     
 @bot.command()
 async def removeOC(ctx, *, name):
-    temp = db['list' + str(ctx.guild.id)]
+    temp = db['list' + str(ctx.guild.name)]
     try:
         temp.remove(name)
-        db['list' + str(ctx.guild.id)] = temp
+        db['list' + str(ctx.guild.name)] = temp
         await ctx.send('removed ' + name)
     except:
         await ctx.send('Deletion failed, did you spell it correctly?')
@@ -223,13 +223,13 @@ async def removeOC(ctx, *, name):
 async def OClist(ctx):
     embed=disnake.Embed()
     embed=disnake.Embed(title="OC list", description="List of all the OC's stored on the database")
-    print(len(db['list' + str(ctx.guild.id)]))
+    print(len(db['list' + str(ctx.guild.name)]))
     i = 0
     repeat = 25
-    while i <= len(db['list' + str(ctx.guild.id)])-1:
+    while i <= len(db['list' + str(ctx.guild.name)])-1:
         print(i)
         x = str(i + 1) + '.'
-        embed.add_field(name=x, value=db['list' + str(ctx.guild.id)][i], inline=False)
+        embed.add_field(name=x, value=db['list' + str(ctx.guild.name)][i], inline=False)
         if i == repeat:
             embed=disnake.Embed()
             repeat += 25
@@ -238,11 +238,11 @@ async def OClist(ctx):
 
 @bot.command()
 async def randomOC(ctx):
-    l_length = len(db['list' + str(ctx.guild.id)])
+    l_length = len(db['list' + str(ctx.guild.name)])
     if l_length == 0:
-        await ctx.send(db['list' + str(ctx.guild.id)][0])
+        await ctx.send(db['list' + str(ctx.guild.name)][0])
     else:
-        await ctx.send(db['list' + str(ctx.guild.id)][random.randint(0, l_length)])
+        await ctx.send(db['list' + str(ctx.guild.name)][random.randint(0, l_length)])
 
 #AI Writing Commands
 @bot.command()

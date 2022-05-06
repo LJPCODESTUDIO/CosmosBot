@@ -10,7 +10,7 @@ from pbwrap import Pastebin
 from disnakeSuperUtils import MusicManager
 from disnake.ext import commands
 from dotenv import load_dotenv
-#from web import web_start, create_site
+from web import web_start
 
 print('Starting Bot')
 
@@ -25,6 +25,7 @@ MusicManager = MusicManager(
 
 #Database config
 db = pysos.Dict('DataBase')
+#db['stories'] = {0:'blank'}
 #db['guilds'] = []
 
 #Pastebin config
@@ -32,7 +33,7 @@ pb = Pastebin(os.getenv('PASTEBIN_KEY'))
 pb.authenticate(os.getenv('NAME'), os.getenv('PASS'))
 
 #AI config
-openai.api_key = os.getenv('KEY')
+openai.api_key = os.getenv('KEY2')
 openai.api_base = 'https://api.goose.ai/v1'\
 
 # variables for prompts
@@ -261,7 +262,7 @@ async def prompt(ctx, *, text):
     completion = openai.Completion.create(
         engine="gpt-j-6b",
         prompt=temp_lore + text,
-        max_tokens=600,
+        max_tokens=500,
         stream=True)
     await ctx.send('Generating story...')
     for c in completion:
@@ -269,28 +270,32 @@ async def prompt(ctx, *, text):
         temp_prompt += c.choices[0].text
     completed_prompt += temp_prompt
 
-    while repeat <= 2:
-        temp_lore = ''''''
-        for i in lorebook.keys():
-            if i in completed_prompt:
-                if not lorebook[i] in temp_lore:
-                    temp_lore += lorebook[i]
-                    temp_lore += '''
-                    '''
-        print(temp_lore)
-        completion = openai.Completion.create(
-            engine="gpt-j-6b",
-            prompt=temp_lore + completed_prompt,
-            max_tokens=200,
-            stream=True)
-        temp_prompt = ''
-        for c in completion:
-            print (c.choices[0].text, end = '')
-            temp_prompt += c.choices[0].text
-        completed_prompt += temp_prompt
-        repeat += 1
-    await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 0, 'story' + str(random.randint(1, 100))))
-    # await ctx.send('Story generated, read it here: ' + create_site(completed_prompt, str(random.randint(1, 100))))
+    temp_lore = ''''''
+    for i in lorebook.keys():
+        if i in completed_prompt:
+            if not lorebook[i] in temp_lore:
+                temp_lore += lorebook[i]
+                temp_lore += '''
+                '''
+    print(temp_lore)
+    completion = openai.Completion.create(
+        engine="gpt-j-6b",
+        prompt=temp_lore + completed_prompt,
+        max_tokens=500,
+        stream=True)
+    temp_prompt = ''
+    for c in completion:
+        print (c.choices[0].text, end = '')
+        temp_prompt += c.choices[0].text
+    completed_prompt += temp_prompt
+    repeat += 1
+    #await ctx.send('Story generated, read it here: ' + pb.create_paste(completed_prompt, 0, 'story' + str(random.randint(1, 100))))
+    temp = db['stories']
+    story_id = len(temp)
+    story_id += 1
+    temp.update({story_id:completed_prompt})
+    db['stories'] = temp
+    await ctx.send('Story generated, read it here: http://localhost:5000/' + str(story_id))
 
 #@bot.command()
 #async def load(ctx, extension):
@@ -305,5 +310,5 @@ async def prompt(ctx, *, text):
 #for filename in os.listdir('./cogs'):
 #    if filename.endswith('.py'):
 #        bot.load_extension(f'cogs.{filename[:-3]}')
-#web_start()
+web_start()
 bot.run(TOKEN)

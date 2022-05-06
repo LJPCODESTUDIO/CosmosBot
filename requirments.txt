@@ -4,3 +4,4 @@ discordSuperUtils
 pysos
 openai
 pbwrap
+quart

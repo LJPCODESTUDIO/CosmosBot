@@ -1,19 +1,26 @@
 import pysos
-from quart import Quart, render_template
+from flask import Flask, render_template
 from threading import Thread
 
-app = Quart('')
+app = Flask('')
 
 @app.route('/')
-async def home():
-    return 'Hello World'
+def home():
+    list = []
+    db = pysos.Dict('DataBase')
+    length = len(db['stories'])
+    db.close
+    for i in range(1, length):
+        list.append('http://localhost:5000/' + str(i))
+    return render_template('index.html', links=list)
+
 
 @app.route('/<ID>')
-async def story(ID):
+def story(ID):
     db = pysos.Dict('DataBase')
     text = db['stories'][str(ID)]
     db.close
-    return await render_template('story.html', content=text, id=ID)
+    return render_template('story.html', content=text, id=ID)
 
 def run():
     app.run(host='localhost', port='5000')

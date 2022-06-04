@@ -5,7 +5,7 @@
         <style>
             body {
                 /*background-color: lightblue;*/
-                background-image: url('/static/rickroll-rick.gif');
+                background-image: url('static/rickroll-rick.gif');
                 font-family: Helvetica;
             }
             h1 {
@@ -13,6 +13,8 @@
                 font-weight: bold;
                 font-size: 500%;
                 font-weight: bold;
+                color: rgb(224, 224, 224);
+                text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
             }
             pre {
                 white-space: pre-wrap;
@@ -21,19 +23,29 @@
                 line-height: 1.8;
 
             }
-            div {
+            .text {
                 background-color: rgb(224, 224, 224);
                 width: 95%;
                 position: relative;
                 top: 15px;
                 margin: auto;
                 border-radius: 25px;
+                border-color: black;
+                border-style: dashed;
+            }
+            .back {
+                position: relative;
+                left: 30px;
+                top: 60px;
             }
         </style>
     </head>
     <body>
+        <div class='back'>
+            <a href="https://stories.ljpcool.com/"><img width=50px src="static\Back Arrow.png"></a>
+        </div>
         <h1>Story {{id}}</h1>
-        <div>
+        <div class='text'>
             <pre>{{content}}</pre>
         </div>
     </body>

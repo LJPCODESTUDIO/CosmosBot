@@ -16,7 +16,7 @@ print('Starting Bot')
 
 # bot config
 load_dotenv()
-TOKEN = os.getenv('TOKEN')
+TOKEN = os.getenv('TOKEN2')
 bot = commands.Bot(command_prefix='?', activity = disnake.Activity(type=disnake.ActivityType.watching, name="you from the window"))
 bot.remove_command('help')
 MusicManager = MusicManager(

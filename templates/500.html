@@ -5,7 +5,7 @@
         <style>
             body {
                 /*background-color: lightblue;*/
-                background-image: url('/static/rickroll-rick.gif');
+                background-image: url('static/rickroll-rick.gif');
                 font-family: Helvetica;
             }
             h1 {
@@ -13,25 +13,37 @@
                 font-weight: bold;
                 font-size: 500%;
                 font-weight: bold;
+                color: rgb(224, 224, 224);
+                text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
             }
             p {
                 white-space: wrap;
                 font-size: larger;
                 padding: 35px;
             }
-            div {
+            .text {
                 background-color: rgb(224, 224, 224);
                 width: 95%;
                 position: relative;
                 top: 15px;
                 margin: auto;
                 border-radius: 25px;
+                border-color: black;
+                border-style: dashed;
+            }
+            .back {
+                position: relative;
+                left: 30px;
+                top: 60px;
             }
         </style>
     </head>
     <body>
+        <div class='back'>
+            <a href="https://stories.ljpcool.com/"><img width=50px src="static\Back Arrow.png"></a>
+        </div>
         <h1>Uh Oh Something Broke!</h1>
-        <div>
+        <div class='text'>
             <p>Something broke internally(error 500). This is likely caused by you searching for a story that does not exist.</p>
         </div>
     </body>

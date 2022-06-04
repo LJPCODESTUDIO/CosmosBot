@@ -1,0 +1,40 @@
+<html>
+    <head>
+        <title>Story {{id}}</title>
+        <link rel='shortcut icon' href="{{ url_for('static', filename='favicon.ico') }}">
+        <style>
+            body {
+                /*background-color: lightblue;*/
+                background-image: url('/static/rickroll-rick.gif');
+                font-family: Helvetica;
+            }
+            h1 {
+                text-align: center;
+                font-weight: bold;
+                font-size: 500%;
+                font-weight: bold;
+            }
+            pre {
+                white-space: pre-wrap;
+                font-size: larger;
+                padding: 35px;
+                line-height: 1.8;
+
+            }
+            div {
+                background-color: rgb(224, 224, 224);
+                width: 95%;
+                position: relative;
+                top: 15px;
+                margin: auto;
+                border-radius: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Story {{id}}</h1>
+        <div>
+            <pre>{{content}}</pre>
+        </div>
+    </body>
+</html>

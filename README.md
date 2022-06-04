@@ -1,2 +1,2 @@
-# CosmosBot
-Personal bot pls ignore
+# CosmoBot
+ 

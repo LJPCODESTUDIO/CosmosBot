@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <title>Story Index</title>
+        <link rel='shortcut icon' href="{{ url_for('static', filename='favicon.ico') }}">
+        <style>
+            body {
+                /*background-color: lightblue;*/
+                background-image: url('/static/rickroll-rick.gif');
+                font-family: Helvetica;
+            }
+            h1 {
+                text-align: center;
+                font-weight: bold;
+                font-size: 500%;
+                font-weight: bold;
+            }
+            p {
+                white-space: wrap;
+                font-size: larger;
+                padding: 35px;
+            }
+            div {
+                background-color: rgb(224, 224, 224);
+                width: 95%;
+                position: relative;
+                top: 15px;
+                margin: auto;
+                border-radius: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Uh Oh Something Broke!</h1>
+        <div>
+            <p>Something broke internally(error 500). This is likely caused by you searching for a story that does not exist.</p>
+        </div>
+    </body>
+</html>

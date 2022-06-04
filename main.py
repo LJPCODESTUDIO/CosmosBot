@@ -24,7 +24,6 @@ MusicManager = MusicManager(
 )
 
 #Database config
-db = pysos.Dict('DataBase')
 #db['stories'] = {0:'blank'}
 #db['guilds'] = []
 
@@ -73,12 +72,14 @@ async def on_play(ctx, player):
 
 @bot.event
 async def on_ready():
+    db = pysos.Dict('DataBase')
     for i in bot.guilds:
         if str(i.name) not in db['guilds']:
             temp = db['guilds']
             temp.append(str(i.name))
             db['guilds'] = temp
             db['list' + str(i.name)] = []
+    db.close
     print('Bot is ready')
     print('loaded on servers' + str(bot.guilds))
 
@@ -183,7 +184,7 @@ async def join(ctx):
     if await MusicManager.join(ctx):
         await ctx.send("Joined Voice Channel")
 
-@bot.command()
+@bot.command(name='queue', aliases=['q'])
 async def queue(ctx):
     if ctx_queue := await MusicManager.get_queue(ctx):
         formatted_queue = [
@@ -191,7 +192,7 @@ async def queue(ctx):
             for x in ctx_queue.queue[ctx_queue.pos + 1 :]
         ]
 
-        embeds = disnake.generate_embeds(
+        embeds = disnakeSuperUtils.generate_embeds(
             formatted_queue,
             "Queue",
             f"Now Playing: {await MusicManager.now_playing(ctx)}",
@@ -199,19 +200,22 @@ async def queue(ctx):
             string_format="{}",
         )
 
-        page_manager = disnake.PageManager(ctx, embeds, public=True)
+        page_manager = disnakeSuperUtils.PageManager(ctx, embeds, public=True)
         await page_manager.run()
 
 @bot.command()
 async def addOC(ctx, *, name):
+    db = pysos.Dict('DataBase')
     temp = db['list' + str(ctx.guild.name)]
     temp.append(name)
     db['list' + str(ctx.guild.name)] = temp
     print(db['list' + str(ctx.guild.name)])
+    db.close
     await ctx.send('added ' + str(name))
     
 @bot.command()
 async def removeOC(ctx, *, name):
+    db = pysos.Dict('DataBase')
     temp = db['list' + str(ctx.guild.name)]
     try:
         temp.remove(name)
@@ -219,9 +223,11 @@ async def removeOC(ctx, *, name):
         await ctx.send('removed ' + name)
     except:
         await ctx.send('Deletion failed, did you spell it correctly?')
+    db.close
 
 @bot.command()
 async def OClist(ctx):
+    db = pysos.Dict('DataBase')
     embed=disnake.Embed()
     embed=disnake.Embed(title="OC list", description="List of all the OC's stored on the database")
     i = 0
@@ -234,19 +240,23 @@ async def OClist(ctx):
             embed=disnake.Embed()
             repeat += 25
         i += 1
+    db.close
     await ctx.send(embed=embed)
 
 @bot.command()
 async def randomOC(ctx):
+    db = pysos.Dict('DataBase')
     l_length = len(db['list' + str(ctx.guild.name)])
     if l_length == 0:
         await ctx.send(db['list' + str(ctx.guild.name)][0])
     else:
         await ctx.send(db['list' + str(ctx.guild.name)][random.randint(0, l_length)])
+    db.close
 
 #AI Writing Commands
 @bot.command()
 async def prompt(ctx, *, text):
+    db = pysos.Dict('Stories')
     repeat = 0
     # Create a completion, return results streaming as they are generated. Run with `python3 -u` to ensure unbuffered output.
     completed_prompt = ''
@@ -295,7 +305,8 @@ async def prompt(ctx, *, text):
     story_id += 1
     temp.update({story_id:completed_prompt})
     db['stories'] = temp
-    await ctx.send('Story generated, read it here: http://localhost:5000/' + str(story_id))
+    db.close
+    await ctx.send('Story generated, read it here: https://stories.ljpcool.com/' + str(story_id))
 
 #@bot.command()
 #async def load(ctx, extension):

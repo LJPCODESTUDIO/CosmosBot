@@ -1,0 +1,11 @@
+{
+    "name": "My Server",
+    "host": "dono-04.danbot.host",
+    "protocol": "sftp",
+    "port": 2022,
+    "username": "ljp.0d4aa50c",
+    "remotePath": "/",
+    "uploadOnSave": true,
+    "useTempFile": false,
+    "openSsh": false
+}

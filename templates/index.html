@@ -1,0 +1,42 @@
+<html>
+    <head>
+        <title>Story Index</title>
+        <link rel='shortcut icon' href="{{ url_for('static', filename='favicon.ico') }}">
+        <style>
+            body {
+                /*background-color: lightblue;*/
+                background-image: url('/static/rickroll-rick.gif');
+                font-family: Helvetica;
+            }
+            h1 {
+                text-align: center;
+                font-weight: bold;
+                font-size: 500%;
+                font-weight: bold;
+            }
+            p {
+                white-space: wrap;
+                font-size: larger;
+                padding: 35px;
+            }
+            div {
+                background-color: rgb(224, 224, 224);
+                width: 95%;
+                position: relative;
+                top: 15px;
+                margin: auto;
+                border-radius: 25px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Story Index</h1>
+        <div>
+            {% for i in links %}
+                <p>
+                    <a href="{{i}}">{{i}}</a>
+                </p>
+            {% endfor %}
+        </div>
+    </body>
+</html>

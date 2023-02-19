@@ -36,4 +36,5 @@ def web_start():
     t = Thread(target=run)
     t.start()
 
-run()
+if __name__ == "__main__":
+    run()

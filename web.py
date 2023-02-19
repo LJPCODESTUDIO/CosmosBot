@@ -30,7 +30,7 @@ def internal_server_error(e):
 
 
 def run():
-    app.run(host='0.0.0.0', port='1168')
+    app.run(host='0.0.0.0', port='5000')
 
 def web_start():
     t = Thread(target=run)

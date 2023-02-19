@@ -1,7 +1,7 @@
 import os
 import disnake
 import json
-from web2 import web_start
+from web import web_start
 from disnake.ext import commands
 from dotenv import load_dotenv
 from music import Music

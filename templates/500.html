@@ -2,41 +2,7 @@
     <head>
         <title>Story Index</title>
         <link rel='shortcut icon' href="{{ url_for('static', filename='favicon.ico') }}">
-        <style>
-            body {
-                /*background-color: lightblue;*/
-                background-image: url('static/rickroll-rick.gif');
-                font-family: Helvetica;
-            }
-            h1 {
-                text-align: center;
-                font-weight: bold;
-                font-size: 500%;
-                font-weight: bold;
-                color: rgb(224, 224, 224);
-                text-shadow: -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000;
-            }
-            p {
-                white-space: wrap;
-                font-size: larger;
-                padding: 35px;
-            }
-            .text {
-                background-color: rgb(224, 224, 224);
-                width: 95%;
-                position: relative;
-                top: 15px;
-                margin: auto;
-                border-radius: 25px;
-                border-color: black;
-                border-style: dashed;
-            }
-            .back {
-                position: relative;
-                left: 30px;
-                top: 60px;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/default_style.css') }}">
     </head>
     <body>
         <div class='back'>

@@ -3,3 +3,7 @@
 .cache
 .local
 .vscode
+CosmosBot.code-workspace
+ffmpeg.exe
+ffplay.exe
+ffprobe.exe

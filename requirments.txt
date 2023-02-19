@@ -1,7 +1,7 @@
-discord.py[voice]
+disnake.py[voice]
 ffmpeg
-discordSuperUtils
-pysos
 openai
-pbwrap
-quart
+pafy
+youtube_dl
+python-dotenv
+pyradios

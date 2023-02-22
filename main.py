@@ -1,6 +1,7 @@
 import os
 import disnake
 import json
+import random
 from web import web_start
 from disnake.ext import commands
 from dotenv import load_dotenv
@@ -27,7 +28,13 @@ async def on_ready():
 
 @bot.command(help='Sends a picture of a sandwich.')
 async def sandwich(ctx):
-    await ctx.send(file=disnake.File('sandwich.jpg'))
+    response = ["I don't wanna", "NO!", "Go make one yourself", "I shall not", "How about, no"]
+    make = random.randint(0, 1)
+    if make == 1:
+        await ctx.send(file=disnake.File('sandwich.jpg'))
+    else:
+        pick_response = random.randint(0, 4)
+        await ctx.send(response[pick_response])
 
 
 async def setup():

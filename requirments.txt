@@ -5,3 +5,5 @@ pafy
 youtube_dl
 python-dotenv
 pyradios
+flask-ngrok
+flask

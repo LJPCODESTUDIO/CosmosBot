@@ -4,11 +4,11 @@ import os
 import glob
 import disnake
 import pafy
-import youtube_dl
 import random
 import json
 from disnake.ext import commands
 from pyradios import RadioBrowser
+from yt_dlp import YoutubeDL as youtube_dl
 
 
 class Music(commands.Cog):

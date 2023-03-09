@@ -1,8 +1,9 @@
+disnake
 disnake.py[voice]
 ffmpeg
 openai
 pafy
-youtube_dl
+yt-dlp
 python-dotenv
 pyradios
 flask-ngrok

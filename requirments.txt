@@ -8,3 +8,4 @@ python-dotenv
 pyradios
 flask-ngrok
 flask
+PyNaCl

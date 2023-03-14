@@ -3,12 +3,12 @@ import asyncio
 import os
 import glob
 import disnake
-import pafy
 import random
 import json
+import yt_dlp
+from requests import get
 from disnake.ext import commands
 from pyradios import RadioBrowser
-from yt_dlp import YoutubeDL as youtube_dl
 
 
 class Music(commands.Cog):
@@ -23,6 +23,7 @@ class Music(commands.Cog):
         self.radio = {}
         self.rb = {}
         self.normal = {}
+        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
 
         self.setup()
     
@@ -80,14 +81,38 @@ class Music(commands.Cog):
                 return await self.play_song(ctx, self.current_song[ctx.guild.id])
             self.normal[ctx.guild.id] = False
             return await self.play_song(ctx, self.SILENCE)
+    
+    async def get_song(self, url):
+        with yt_dlp.YoutubeDL(self.YDL_OPTIONS) as ydl:
+            song_info = ydl.extract_info(url, download=False)
+        
+        return song_info
 
     async def search_song(self, amount, song, get_url=False):
-        info = await self.bot.loop.run_in_executor(None, lambda: youtube_dl.YoutubeDL(
-            {"format": "bestaudio", "quiet": True}).extract_info(f'ytsearch{amount}:{song}', download=False, ie_key='YoutubeSearch')
-            )
-        if len(info["entries"]) == 0: return None
+        with yt_dlp.YoutubeDL(self.YDL_OPTIONS) as ydl:
+            try:
+                get(song) 
+            except:
+                if amount == 1:
+                    video = ydl.extract_info(f"ytsearch:{song}", download=False)['entries'][0]
+                else:
+                    video = ydl.extract_info(f"ytsearch5:{song}", download=False)['entries'][0:amount]
+            else:
+                video = ydl.extract_info(song, download=False)
 
-        return [entry["webpage_url"] for entry in info["entries"]] if get_url else info
+        if len(video) == 0:
+            return None
+        
+        if get_url:
+            if amount == 1:
+                return video["webpage_url"]
+            else:
+                urls = []
+                for url in video:
+                    urls.append(url["webpage_url"])
+                return urls
+        else:
+            return video
     
     async def play_song(self, ctx, song):
         #Check if RB is active
@@ -106,8 +131,8 @@ class Music(commands.Cog):
             self.current_song[ctx.guild.id] = str(song)
             ctx.voice_client.source.volume = 0.5
             return
-        url = pafy.new(song).getbestaudio().url
-        ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(url)), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
+        url = await self.get_song(song)
+        ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(url["url"])), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
         self.current_song[ctx.guild.id] = str(song)
         ctx.voice_client.source.volume = 0.5
 
@@ -208,8 +233,6 @@ class Music(commands.Cog):
 
             if result is None:
                 return await ctx.send("Sorry I couldn't find the song, try the search command.")
-            
-            song = result[0]
         
         if ctx.voice_client.source is not None:
             queue_len = len(self.song_queue[ctx.guild.id])
@@ -221,7 +244,7 @@ class Music(commands.Cog):
                 return await ctx.send("Sorry but I have a max queue length of 25 songs, please wait for this one to end.")
 
         self.normal[ctx.guild.id] = True
-        await self.play_song(ctx, song)
+        await self.play_song(ctx, result)
         await ctx.send(f'Playing: {self.current_song[ctx.guild.id]}.')
 
     

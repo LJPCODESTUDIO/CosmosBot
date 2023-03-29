@@ -18,7 +18,7 @@ class Music(commands.Cog):
         self.current_song = {}
         self.loopqueue = {}
         self.loop = {}
-        self.SILENCE = '.\Local\250-milliseconds-of-silence.mp3'
+        self.SILENCE = './Local/250-milliseconds-of-silence.mp3'
         self.radio_queue = {}
         self.radio = {}
         self.rb = {}
@@ -71,7 +71,7 @@ class Music(commands.Cog):
             if self.loop[ctx.guild.id] == True:
                 return await self.play_song(ctx, self.current_song[ctx.guild.id])
             #check if current song is local file, then remove it
-            if self.current_song.endswith(('.mp3', '.mpeg')) and (self.loopqueue[ctx.guild.id] == False and self.loop[ctx.guild.id] == False) and self.current_song[ctx.guild.id] != '.\Local\250-milliseconds-of-silence.mp3':
+            if self.current_song[ctx.guild.id].endswith(('.mp3', '.mpeg')) and (self.loopqueue[ctx.guild.id] == False and self.loop[ctx.guild.id] == False) and self.current_song[ctx.guild.id] != '.\Local\250-milliseconds-of-silence.mp3':
                 os.remove(f'./Local/Audio_Files/{self.current_song[ctx.guild.id]}')
 
             await self.play_song(ctx, self.song_queue[ctx.guild.id][0])
@@ -233,12 +233,14 @@ class Music(commands.Cog):
 
             if result is None:
                 return await ctx.send("Sorry I couldn't find the song, try the search command.")
+        else:
+            result = song
         
         if ctx.voice_client.source is not None:
             queue_len = len(self.song_queue[ctx.guild.id])
 
             if queue_len < 25:
-                self.song_queue[ctx.guild.id].append(song)
+                self.song_queue[ctx.guild.id].append(result)
                 return await ctx.send(f"Currently playing a song, song added to queue at position: {queue_len + 1}.")
             else:
                 return await ctx.send("Sorry but I have a max queue length of 25 songs, please wait for this one to end.")

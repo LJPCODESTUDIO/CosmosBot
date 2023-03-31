@@ -13,3 +13,4 @@ This discord bot is designed for my hardware and mine alone. While it *can* be u
 - Fully functional ?sandwich command
 - Fully functional online radio player
 - Fully functional Random OC Selector
+- Fully functional website(not ljpcodestudio.github.io)

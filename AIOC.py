@@ -78,7 +78,7 @@ class AI(commands.Cog):
         for engine in engines.data:
             print(engine.id)
     
-    @commands.command(help='Creates an AI generated short story based off of a beginning prompt.\n Available engines are: gpt-neo, gpt-j, cass, fairseq.')
+    @commands.command(help='Creates an AI generated short story based off of a beginning prompt.\n Available engines are: gpt-neo, gpt-j, cass, fairseq, convo.')
     async def prompt(self, ctx, engine, *, text):
         await ctx.send('Please wait, your story is being generated.')
         if engine == 'gpt-j':
@@ -86,9 +86,9 @@ class AI(commands.Cog):
         elif engine == 'gpt-neo':
             engine = 'gpt-neo-20b'
         elif engine == 'cass':
-            engine = 'cassandra-lit-e3-6-7b'
+            engine = 'cassandra-lit-6-9b'
         elif engine == 'fairseq':
-            engine = 'fairseq-2-7b'
+            engine = 'fairseq-13b'
         elif engine == 'convo':
             engine = 'convo-6b'
         else:
@@ -122,4 +122,4 @@ class AI(commands.Cog):
         with open('stories.json', 'w') as f:
             json.dump(stories, f, indent=2)
         # send message with link to generated prompt
-        await ctx.send(f'Story generated, read it here: : https://stories.ljpcool.com/{story_id}')
+        await ctx.send(f'Story generated, read it here: : http://stories.ljpcool.com:10881/{story_id}')

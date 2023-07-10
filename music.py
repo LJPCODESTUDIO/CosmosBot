@@ -23,7 +23,11 @@ class Music(commands.Cog):
         self.radio = {}
         self.rb = {}
         self.normal = {}
-        self.YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+        self.YDL_OPTIONS = {'format': 'bestaudio',
+                            'noplaylist':'True',
+                            'verbose': 'True'
+                            }
+        self.FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5'}
 
         self.setup()
     
@@ -71,7 +75,7 @@ class Music(commands.Cog):
             if self.loop[ctx.guild.id] == True:
                 return await self.play_song(ctx, self.current_song[ctx.guild.id])
             #check if current song is local file, then remove it
-            if self.current_song[ctx.guild.id].endswith(('.mp3', '.mpeg')) and (self.loopqueue[ctx.guild.id] == False and self.loop[ctx.guild.id] == False) and self.current_song[ctx.guild.id] != '.\Local\250-milliseconds-of-silence.mp3':
+            if self.current_song[ctx.guild.id].endswith(('.mp3', '.mpeg')) and (self.loopqueue[ctx.guild.id] == False and self.loop[ctx.guild.id] == False) and self.current_song[ctx.guild.id] != self.SILENCE:
                 os.remove(f'./Local/Audio_Files/{self.current_song[ctx.guild.id]}')
 
             await self.play_song(ctx, self.song_queue[ctx.guild.id][0])
@@ -126,13 +130,15 @@ class Music(commands.Cog):
             #if local song, check if radio is enabled
             if self.radio[ctx.guild.id] == True:
                 ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(f'./Local/Radio/{song}')), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
-            else:
+            elif len(self.song_queue[ctx.guild.id]) > 0:
                 ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(f'./Local/Audio_Files/{song}')), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
+            else:
+                ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(song)), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
             self.current_song[ctx.guild.id] = str(song)
             ctx.voice_client.source.volume = 0.5
             return
         url = await self.get_song(song)
-        ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(url["url"])), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
+        ctx.voice_client.play(disnake.PCMVolumeTransformer(disnake.FFmpegPCMAudio(url["url"], before_options='-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5')), after=lambda error: self.bot.loop.create_task(self.check_queue(ctx)))
         self.current_song[ctx.guild.id] = str(song)
         ctx.voice_client.source.volume = 0.5
 

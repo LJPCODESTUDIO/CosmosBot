@@ -4,6 +4,7 @@ ffmpeg
 openai
 pafy
 yt-dlp
+pytube
 python-dotenv
 pyradios
 flask-ngrok

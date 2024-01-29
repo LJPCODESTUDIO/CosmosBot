@@ -5,7 +5,8 @@ import random
 from web import web_start
 from disnake.ext import commands
 from dotenv import load_dotenv
-from music import Music
+#from music import Music
+from music_rewrite import Music
 from AIOC import OC, AI
 
 load_dotenv()
